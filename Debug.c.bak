@@ -1,0 +1,140 @@
+#include"Debug.h"
+#include"BufferCache.h"
+
+
+FILE * fpDebugData;						// File pointer for debug log
+
+
+UI8 ui8PrintBuffer(BUF_STRUCT*);
+UI8 ui8PrintLinkList(UI8, BUF_STRUCT*);
+UI8 ui8BufferPoolSnapShot(void);
+UI8 ui8PrintBufferToConsole(BUF_STRUCT* pBufToPrint);
+
+
+UI8 ui8PrintBuffer(BUF_STRUCT* pBufToPrint)
+{
+	fprintf(fpDebugData, "\n\n\nSelfAddress: %p\n", pBufToPrint);
+
+	fprintf(fpDebugData, "ui16BlockNo: %d\n", pBufToPrint->ui16BlockNo);
+	fprintf(fpDebugData, "ui16BufStatus: %d\n", pBufToPrint->ui16BufStatus);
+	fprintf(fpDebugData, "pBufIncoreDiskData: %p\n", pBufToPrint->pBufIncoreDiskData);
+
+	fprintf(fpDebugData, "pNextFreeLstBufStruct: %p\n", pBufToPrint->pNextFreeLstBufStruct);
+	fprintf(fpDebugData, "pPrevFreeLstBufStruct: %p\n", pBufToPrint->pPrevFreeLstBufStruct);
+
+	fprintf(fpDebugData, "pNextHashQueBufStruct: %p\n", pBufToPrint->pNextHashQueBufStruct);
+	fprintf(fpDebugData, "pPrevHashQueBufStruct: %p\n", pBufToPrint->pPrevHashQueBufStruct);
+
+	return 0;
+}
+
+
+
+UI8 ui8PrintLinkList(UI8 ui8LinkList, BUF_STRUCT* pHead)
+{
+	UI16 ui16LoopCounter;
+
+	ui16LoopCounter = pHead->ui16BlockNo + 1;
+
+	while (ui16LoopCounter)
+	{
+		ui8PrintBuffer(pHead);
+
+		if (ui8LinkList == FREE_LIST)
+		{
+			pHead = pHead->pNextFreeLstBufStruct;
+		}
+		else if (ui8LinkList == HASH_QUE)
+		{
+			pHead = pHead->pNextHashQueBufStruct;
+		}
+		ui16LoopCounter--;
+	}
+
+	return 0;
+}
+
+
+
+UI8 ui8BufferPoolSnapShot(void)
+{
+	UI16 ui16LoopCounter;
+	static UI16 ui16BufferPoolSnapInstance = 0;
+
+	fopen_s(&fpDebugData, "DebugData.txt", "a");
+
+	fprintf(fpDebugData, "\n\n\n\n\n-------------BUFF POOL SNAP %d START--------------------", ui16BufferPoolSnapInstance);
+
+	fprintf(fpDebugData, "\n\n\nBUFFER POOL START");
+	for (ui16LoopCounter = 0; ui16LoopCounter < MAX_NO_OF_BUF; ui16LoopCounter++)
+	{
+		ui8PrintBuffer(&Buf[ui16LoopCounter]);
+	}
+	fprintf(fpDebugData, "\nBUFFER POOL END");
+
+
+	fprintf(fpDebugData, "\n\n\nFREE LIST HEADER START");
+	ui8PrintBuffer(&FreeLstHeader);
+	fprintf(fpDebugData, "\nFREE LIST HEADER END");
+
+
+	fprintf(fpDebugData, "\n\n\nHASH QUE HEADERS START");
+	for (ui16LoopCounter = 0; ui16LoopCounter < NO_OF_HASH_QUE; ui16LoopCounter++)
+	{
+		fprintf(fpDebugData, "\n\n\nHASH QUE %d HEADER START", ui16LoopCounter);
+		ui8PrintBuffer(&HashQueHeader[ui16LoopCounter]);
+		fprintf(fpDebugData, "\nHASH QUE %d HEADER END", ui16LoopCounter);
+	}
+	fprintf(fpDebugData, "\nHASH QUE HEADERS END");
+
+
+	fprintf(fpDebugData, "\n\n\nFREE LIST START");
+	ui8PrintLinkList(FREE_LIST, &FreeLstHeader);
+	fprintf(fpDebugData, "\nFREE LIST END");
+
+
+	fprintf(fpDebugData, "\n\n\nHASH QUES START");
+	for (ui16LoopCounter = 0; ui16LoopCounter < NO_OF_HASH_QUE; ui16LoopCounter++)
+	{
+		fprintf(fpDebugData, "\n\n\nHASH QUE %d START", ui16LoopCounter);
+		ui8PrintLinkList(HASH_QUE, &HashQueHeader[ui16LoopCounter]);
+		fprintf(fpDebugData, "\nHASH QUE %d END", ui16LoopCounter);
+	}
+	fprintf(fpDebugData, "\nHASH QUES END");
+
+	fprintf(fpDebugData, "\n\n\n\n\n-------------BUFF POOL SNAP %d END--------------------", ui16BufferPoolSnapInstance);
+
+	ui16BufferPoolSnapInstance++;
+
+	fclose(fpDebugData);
+
+	return 0;
+
+}
+
+
+UI8 ui8PrintBufferToConsole(BUF_STRUCT* pBufToPrint)
+{
+
+	UI16 ui16LocalLoopCounter;
+
+	printf("\n\n\nSelfAddress: %p\n", pBufToPrint);
+
+	printf("ui16BlockNo: %d\n", pBufToPrint->ui16BlockNo);
+	printf("ui16BufStatus: %d\n", pBufToPrint->ui16BufStatus);
+	printf("pBufIncoreDiskData: %p\n", pBufToPrint->pBufIncoreDiskData);
+
+	printf("pNextFreeLstBufStruct: %p\n", pBufToPrint->pNextFreeLstBufStruct);
+	printf("pPrevFreeLstBufStruct: %p\n", pBufToPrint->pPrevFreeLstBufStruct);
+
+	printf("pNextHashQueBufStruct: %p\n", pBufToPrint->pNextHashQueBufStruct);
+	printf("pPrevHashQueBufStruct: %p\n", pBufToPrint->pPrevHashQueBufStruct);
+
+	printf("\n");
+	for (ui16LocalLoopCounter = 0; ui16LocalLoopCounter < BLOCK_SIZE; ui16LocalLoopCounter++)
+	{
+		printf("%x", pBufToPrint->pBufIncoreDiskData->ui8UniformByteStream[ui16LocalLoopCounter]);
+	}
+
+	return 0;
+}

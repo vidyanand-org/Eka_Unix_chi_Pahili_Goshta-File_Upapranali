@@ -1,0 +1,6 @@
+---- ui8BufferPoolSnapShot Matches (5 in 2 files) ----
+BufferCache.c:#include"Debug.h"				// Included for ui8BufferPoolSnapShot()
+BufferCache.c://	ui8BufferPoolSnapShot();		
+BufferCache.c://	ui8BufferPoolSnapShot();	// take a snap shoot of buffer pool for debug purpose
+BufferCache.c://	ui8BufferPoolSnapShot();	// take a snap shoot of buffer pool for debug purpose
+InodeCache.c:#include"Debug.h"				// Included for ui8BufferPoolSnapShot()

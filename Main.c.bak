@@ -1,0 +1,102 @@
+#include"Main.h"
+#include"BufferCache.h"
+#include"Debug.h"
+#include "HardDiskFileDriver.h"
+
+UI8 FormatedDiskBlock[ONE_KB_SIZE];
+
+SI16 main(void);
+
+
+SI16 main(void)
+{
+	BUF_STRUCT* pBufLocalBlk;
+
+	UI16 ui16MenuSelected;
+	UI16 ui16InputBlockNo;	
+
+	UI16 ui16LocalLoopCounter;
+
+	ui8InitBufPool();
+
+
+
+
+	while (TRUE)
+	{
+		printf("\n\n\nMENU");
+		printf("\n0:QUIT");
+		printf("\n1:getblk()");
+		printf("\n2:brelease()");
+		printf("\n3:bread()");
+		printf("\n4:bwrite()");
+		printf("\n5:FormateHardDiskFile()");
+		printf("\nEnter Your Choise: ");
+		scanf_s("%d", &ui16MenuSelected);
+
+		switch (ui16MenuSelected)
+		{
+
+
+		case 0:
+			exit(0);
+			break;
+
+
+		case 1:
+			printf("\nBlock No - ");
+			scanf_s("%u", &ui16InputBlockNo);
+			ui8GetBlk(ui16InputBlockNo, &pBufLocalBlk);
+			break;
+
+
+		case 2:
+			printf("\nBlock No - ");
+			scanf_s("%u", &ui16InputBlockNo);
+			ui8BlockNoToBUffer(ui16InputBlockNo, &pBufLocalBlk);
+			if (pBufLocalBlk)
+			{
+				ui8brelse(pBufLocalBlk);
+			}
+			else
+			{
+				printf("\nBlock not present in buf pool");
+			}
+			break;
+
+
+		case 3:
+			printf("\nBlock No - ");
+			scanf_s("%u", &ui16InputBlockNo);
+			ui8bread(ui16InputBlockNo, &pBufLocalBlk);
+			ui8PrintBufferToConsole(pBufLocalBlk);
+			ui8bwrite(pBufLocalBlk);
+			break;
+
+
+		case 4:
+			printf("\nBlock No - ");
+			scanf_s("%u", &ui16InputBlockNo);
+			ui8bread(ui16InputBlockNo, &pBufLocalBlk);
+
+			ui8UnsafeMemoeryCopy((UC8*)"A", (UI16)1,
+				(UC8*)(pBufLocalBlk->pBufIncoreDiskData->ui8UniformByteStream), (UI16)BLOCK_SIZE);
+
+			ui8bwrite(pBufLocalBlk);
+
+			break;
+
+
+		case 5:
+			ui8FormatHardDiskFile();
+			break;
+
+
+		default:
+			printf("\nInvalid Input");
+			break;
+		}
+
+	}
+	return 0;
+}

@@ -1,0 +1,10 @@
+﻿  Main.c
+  HardDiskFileDriver.c
+  GeneralPurposeFunctions.c
+  LinkList.c
+  InodeCache.c
+  Debug.c
+  BufferCache.c
+  Generating Code...
+  MyOS.vcxproj -> D:\C Progs\UNIX_FS\Debug\MyOS.exe
+  MyOS.vcxproj -> D:\C Progs\UNIX_FS\Debug\MyOS.pdb (Partial PDB)
